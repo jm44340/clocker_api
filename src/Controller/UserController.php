@@ -249,4 +249,56 @@ class UserController extends AbstractController
         ]);
     }
 
+        /**
+     * @Route("/user/list", name="user_list")
+     */
+    public function list(ManagerRegistry $doctrine, Request $request): Response
+    {
+        /*
+        {
+            "user_id": 2,
+        }
+        */
+        $session = new Session();
+        $id = $session->get("user_id");
+
+        if(!$id) {
+            return $this->json([
+                'message' => "Not logged in",
+            ]);
+        }
+
+        $user = $doctrine->getRepository(Users::class)->find($id);
+
+        if(!$user) {
+            return $this->json([
+                'message' => "User not found",
+            ]);
+        }
+
+        if($user->getType() != 2) {
+            return $this->json([
+                'message' => "Invalid permissions",
+            ]);
+        }
+
+
+        $users = $doctrine->getRepository(Users::class)->findAll();
+
+        $output_array = array();
+        foreach ($users as &$user) {
+            array_push($output_array, [
+                "id" => $user->getId(),
+                "username" => $user->getUsername(),
+                "groups" => $user->getGroups(),
+                "type" => $user->getType()
+            ]);
+        }
+
+        return $this->json([
+            'message' => "OK",
+            'users' => $output_array
+        ]);
+    }
+
 }
