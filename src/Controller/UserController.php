@@ -116,7 +116,7 @@ class UserController extends AbstractController
         $new_user->setUsername($username);
         $new_user->setPassword($password_sha);
         $new_user->setGroups($groups);
-        $new_user->setType(2);
+        $new_user->setType(0);
 
         $doctrine_manager = $doctrine->getManager();
         $doctrine_manager->persist($new_user);
